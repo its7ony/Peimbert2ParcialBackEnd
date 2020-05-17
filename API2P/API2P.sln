@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI2P", "WebAPI2P\WebAPI2P.csproj", "{D7A2BAB0-33D0-4C5D-88CC-5428F959956C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D7A2BAB0-33D0-4C5D-88CC-5428F959956C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7A2BAB0-33D0-4C5D-88CC-5428F959956C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7A2BAB0-33D0-4C5D-88CC-5428F959956C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7A2BAB0-33D0-4C5D-88CC-5428F959956C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0F76075B-C277-489E-A107-C147E5820A7B}
+	EndGlobalSection
+EndGlobal
