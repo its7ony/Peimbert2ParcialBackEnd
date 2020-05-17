@@ -198,14 +198,13 @@ namespace WebAPI2P.Controllers
             List<dynamic> lstVentas = new List<dynamic>();
             List<ObjectGeneric> objectList = new List<ObjectGeneric>();
 
-            string[] years = { "1996,1997,1998" };
+            string[] years = { "1996","1997","1998" };
 
             dynamic result = new
             {
-                years = years,
-                mes = Regex.Replace(month, "[^0-9]", ""),
-                datosDimension = dimension,
-                datosVenta = lstVentas
+                barChartLabels = years,
+                barChartData = lstVentas,
+                mes = formatMonth(int.Parse(Regex.Replace(month, "[^0-9]", ""))),
             };
 
             var valuesArray = values.Split(',');
@@ -228,7 +227,6 @@ namespace WebAPI2P.Controllers
                     {
                         while (dr.Read())
                         {
-                            dimension.Add(dr.GetString(0));
                             List<string> auxList = new List<string>();
                             int xValues = dr.FieldCount;
                             for (int i = 1; i < xValues; i++)
@@ -251,8 +249,9 @@ namespace WebAPI2P.Controllers
 
                             dynamic objDinamic = new
                             {
-                                descripcion = dr.GetString(0),
-                                arrayVenta = auxList
+                                data = auxList,
+                                label = dr.GetString(0)
+                               
                             };
 
                             lstVentas.Add(objDinamic);
@@ -266,6 +265,66 @@ namespace WebAPI2P.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, (object)result);
         }
 
+
+        public string formatMonth(int value)
+        {
+            string month = string.Empty;
+            switch (value)
+            {
+                case 1:
+                    month = "Enero";
+                    break;
+
+                case 2:
+                    month = "Febrero";
+                    break;
+
+
+                case 3:
+                    month = "Marzo";
+                    break;
+
+
+                case 4:
+                    month = "Abril";
+                    break;
+
+
+                case 5:
+                    month = "Mayo";
+                    break;
+
+
+                case 6:
+                    month = "Junio";
+                    break;
+
+                case 7:
+                    month = "Julio";
+                    break;
+
+                case 8:
+                    month = "Agosto";
+                    break;
+
+                case 9:
+                    month = "Septiembre";
+                    break;
+
+                case 10:
+                    month = "Octubre";
+                    break;
+
+                case 11:
+                    month = "Novimiembre";
+                    break;
+
+                case 12:
+                    month = "Diciembre";
+                    break;
+            }
+            return month;
+        }
     }
 
 }
