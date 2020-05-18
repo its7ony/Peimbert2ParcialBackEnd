@@ -266,6 +266,103 @@ namespace WebAPI2P.Controllers
         }
 
 
+        [HttpGet]
+        [Route("GetDataBarByDimensionYear/{dim}/{year}/{values}")]
+        public HttpResponseMessage GetDataBarByDimensionYear(string dim, string year, string values)
+        {
+            string MDX_QUERY = string.Empty;
+
+            MDX_QUERY = @"
+                SELECT 
+                   [Dim Tiempo].[Mes].[Mes].AllMembers
+                ON COLUMNS,  
+                   NONEMPTY (ORDER(
+		                 STRTOSET(@Dimension)," +
+                            dim + @".CURRENTMEMBER.MEMBER_NAME, ASC
+	                ))
+   
+                ON ROWS  
+
+                FROM [DWH Northwind]
+
+                WHERE " + year + ";";
+
+            Debug.Write(MDX_QUERY);
+
+            List<string> dimension = new List<string>();
+            List<dynamic> lstVentas = new List<dynamic>();
+            List<ObjectGeneric> objectList = new List<ObjectGeneric>();
+
+            string selectedyear = Regex.Replace(year, "[^0-9]", "");
+            string[] months = {"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
+
+            dynamic result = new
+            {
+                barChartLabels = months,
+                barChartData = lstVentas,
+                year = selectedyear
+            };
+
+            var valuesArray = values.Split(',');
+            string valoresDimension = string.Empty;
+            foreach (var item in valuesArray)
+            {
+                valoresDimension += "{0}.[" + item + "],";
+            }
+            valoresDimension = valoresDimension.TrimEnd(',');
+            valoresDimension = string.Format(valoresDimension, dim);
+            valoresDimension = @"{" + valoresDimension + "}";
+
+            using (AdomdConnection cnn = new AdomdConnection(ConfigurationManager.ConnectionStrings["CuboNorthwind"].ConnectionString))
+            {
+                cnn.Open();
+                using (AdomdCommand cmd = new AdomdCommand(MDX_QUERY, cnn))
+                {
+                    cmd.Parameters.Add("Dimension", valoresDimension);
+                    using (AdomdDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection))
+                    {
+                        while (dr.Read())
+                        {
+                            List<string> auxList = new List<string>();
+                            int xValues = dr.FieldCount;
+                            for (int i = 1; i < xValues; i++)
+                            {
+                                string ventaName = string.Empty;
+                                try
+                                {
+                                    auxList.Add(dr.GetString(i));
+                                    ventaName = dr.GetString(i);
+                                }
+                                catch (Exception ex)
+                                {
+                                    auxList.Add(string.Empty);
+                                    ventaName = string.Empty;
+                                    Debug.WriteLine(ex.Message);
+                                }
+
+                            }
+
+
+                            dynamic objDinamic = new
+                            {
+                                data = auxList,
+                                label = dr.GetString(0)
+
+                            };
+
+                            lstVentas.Add(objDinamic);
+
+                        }
+                        dr.Close();
+                    }
+                }
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, (object)result);
+        }
+
+
+
         public string formatMonth(int value)
         {
             string month = string.Empty;
