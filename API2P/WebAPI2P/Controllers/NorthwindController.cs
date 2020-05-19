@@ -172,8 +172,8 @@ namespace WebAPI2P.Controllers
 
 
         [HttpGet]
-        [Route("GetDataBarByDimensionMonth/{dim}/{month}/{values}")]
-        public HttpResponseMessage GetDataBarByDimensionMonth(string dim, string month, string values)
+        [Route("GetDataPieByDimensionMonth/{dim}/{month}/{values}")]
+        public HttpResponseMessage GetDataPieByDimensionMonth(string dim, string month, string values)
         {
             string MDX_QUERY = string.Empty;
 
@@ -194,26 +194,25 @@ namespace WebAPI2P.Controllers
 
             Debug.Write(MDX_QUERY);
 
-            List<string> dimension = new List<string>();
             List<dynamic> lstVentas = new List<dynamic>();
-            List<ObjectGeneric> objectList = new List<ObjectGeneric>();
-
             string[] years = { "1996","1997","1998" };
 
             dynamic result = new
             {
-                barChartLabels = years,
-                barChartData = lstVentas,
-                mes = formatMonth(int.Parse(Regex.Replace(month, "[^0-9]", ""))),
+                pieChartLabels = years,
+                pie = lstVentas,
+
+                mes = formatMonth(int.Parse(Regex.Replace(month, "[^0-9]", "")))
             };
 
+            values += ",";
             var valuesArray = values.Split(',');
             string valoresDimension = string.Empty;
             foreach (var item in valuesArray)
             {
-                valoresDimension += "{0}.[" + item + "],";
+                valoresDimension += "{0}.[" + item + "]";
+                break;
             }
-            valoresDimension = valoresDimension.TrimEnd(',');
             valoresDimension = string.Format(valoresDimension, dim);
             valoresDimension = @"{" + valoresDimension + "}";
 
@@ -227,20 +226,18 @@ namespace WebAPI2P.Controllers
                     {
                         while (dr.Read())
                         {
-                            List<string> auxList = new List<string>();
+                            List<decimal> auxList = new List<decimal>();
                             int xValues = dr.FieldCount;
                             for (int i = 1; i < xValues; i++)
                             {
                                 string ventaName = string.Empty;
                                 try
                                 {
-                                    auxList.Add(dr.GetString(i));
-                                    ventaName = dr.GetString(i);
+                                    auxList.Add(dr.GetDecimal(i));
                                 }
                                 catch (Exception ex)
                                 {
-                                    auxList.Add(string.Empty);
-                                    ventaName = string.Empty;
+                                    auxList.Add(0);
                                     Debug.WriteLine(ex.Message);
                                 }
 
@@ -249,8 +246,7 @@ namespace WebAPI2P.Controllers
 
                             dynamic objDinamic = new
                             {
-                                data = auxList,
-                                label = dr.GetString(0)
+                                pieChartData = auxList
                                
                             };
 
